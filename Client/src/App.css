@@ -1,0 +1,20 @@
+/* write your css here */
+.container {  display: grid;
+    grid-template-columns: 0.8fr 2fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "calendar todos graph"
+      "calendar todos graph"
+      "calendar todos graph";
+  }
+  
+  .calendar { grid-area: calendar; 
+    padding: 10px;
+}
+  
+  .todos { grid-area: todos; }
+  
+  .graph { grid-area: graph; }
+  
