@@ -4,7 +4,7 @@ import {Types,Document} from "mongoose"
 @Schema()
 export class User{
     @Prop({required: true, unique: true})
-    userId : string;
+    username : string;
 
     @Prop({required: true})
     password : string;
