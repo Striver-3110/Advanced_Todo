@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateTodoDto, UpdateTodoDto } from "./todo.dto";
 
 
-interface Todo {
+export interface Todo {
     id: string;
     title: string;
     description?: string;
