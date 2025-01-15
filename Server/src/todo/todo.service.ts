@@ -1,55 +1,50 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateTodoDto, UpdateTodoDto } from "./todo.dto";
-
-
-export interface Todo {
-    id: string;
-    title: string;
-    description?: string;
-}
-
+import { Todo } from "./schemas/todo.schema";
+import { Model } from 'mongoose';
+import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
 export class TodoService {
-    private todos : Todo[] = [];
+    // private todos : Todo[] = [];
+    constructor(@InjectModel(Todo.name) private readonly todoModel : Model<Todo>){}
 
-    findAll():Todo[]{
-        return this.todos;
+    async findAll():Promise<Todo[]>{
+        return await this.todoModel.find().exec();
     }
 
-    findOne(id:string):Todo | undefined{
-        const todo:Todo = this.todos.find(todoObj => todoObj.id === id);
+    async findOne(id:string):Promise<Todo>{
+        const todo:Todo = await this.todoModel.findById(id).exec();
         if(!todo){
             throw new NotFoundException(`Todo ${id} not found`);
         }
         return todo;
     }
 
-    create(createTodoDto: CreateTodoDto):Todo{
-        const newTodo: Todo = {
-            id: (this.todos.length+1).toString(),
-            ...createTodoDto
-        }
-        this.todos.push(newTodo);
-        return newTodo;
+    async create(createTodoDto: CreateTodoDto):Promise<Todo>{
+        const todo = new this.todoModel(createTodoDto);
+        return await todo.save()
+
     }
 
-    update(id: string ,updateTodoDto: UpdateTodoDto): Todo{
-        const todo: Todo = this.todos.find(todo=> todo.id === id)
+    async update(id: string ,updateTodoDto: UpdateTodoDto): Promise<Todo>{
+        const todo: Todo = await this.todoModel.findById(id)
         if(!todo){
             throw new NotFoundException(`Todo with id: ${id} not found`)
         }
-        Object.assign(todo, updateTodoDto)
-
-        return todo;
+        todo.title = updateTodoDto.title;
+        if(updateTodoDto.description)
+            todo.description = updateTodoDto.description;
+        return await todo.save()
     }
 
-    remove(id: string):void{
-        const todo = this.todos.find(todo => todo.id === id)
+
+    async remove(id: string):Promise<void>{
+        const todo = await this.todoModel.findById(id)
         if(!todo){
             throw new NotFoundException(`Todo with id: ${id} not found`)
         }
-        console.log(`Todo with id: ${todo.id} deleted`)
+        await todo.deleteOne();
+        console.log(`Todo with id: ${id} deleted`)
     }
-
 }
