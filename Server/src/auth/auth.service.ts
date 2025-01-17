@@ -88,10 +88,18 @@ export class AuthService {
             }
         }
 
+        const payload ={
+            username: username,
+            password: password,
+        }
+        const jwtToken = this.jwtService.sign(payload,{
+            secret:process.env.JWT_SECRET
+        })
+
         return {
             success: true,
             message: "User logged in successfully!",
-            jwtToken:""
+            jwtToken: jwtToken
         }
     }
 }
